@@ -542,37 +542,35 @@ public class Controller /*implements Initializable*/{
 //        int c4 = random(1, 4);
         for (int i = 0; i < ants.size(); i++){
             if(ants.get(i).getDeathTime() < now){
+            	System.out.println("Ant life expired " + i+1);
             	gameGrid[ants.get(i).getX()][ants.get(i).getY()] = 0;
                 
-                
-                ants.get(i).resetDeathTime();
                 ants.remove(i);
             }
         }
         for (int i = 0; i < country2.size(); i++){
             if(country2.get(i).getDeathTime() < now){
+            	System.out.println("Country2 life expired " + i+1);
             	 gameGrid[country2.get(i).getX()][country2.get(i).getY()] = 0;
                 
-               
-                country2.get(i).resetDeathTime();
                 country2.remove(i);
             }
         }
         for (int i = 0; i < country3.size(); i++){
             if(country3.get(i).getDeathTime() < now){
 
+            	System.out.println("Country3 life expired " + i+1);
                 gameGrid[country3.get(i).getX()][country3.get(i).getY()] = 0;
                 
-                country3.get(i).resetDeathTime();
                 country3.remove(i);
             }
         }
         for (int i = 0; i < country4.size(); i++){
             if(country4.get(i).getDeathTime() < now){
 
+            	System.out.println("Country4 life expired " + i+1);
                 gameGrid[country4.get(i).getX()][country4.get(i).getY()] = 0;
                 
-                country4.get(i).resetDeathTime();
                 country4.remove(i);
             }
         }
