@@ -8,6 +8,9 @@ public class Country4{
     private int y;
     private int typeOfAnt;
     private int age;
+    
+ // base
+    public static Position antHill = new Position(18,18);
     String loc;
     private long startTime;
     private long reproduceTime;
@@ -18,9 +21,8 @@ public class Country4{
         this.y = y;
         startTime = System.nanoTime();
         reproduceTime = System.nanoTime();
-        deathTime = System.nanoTime();
-
-
+     // Death time = now + 15 seconds
+        deathTime = System.nanoTime() + Ant.lifeSpan;
     }
     public void changeLoc(int[][] gameGrid){
 

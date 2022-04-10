@@ -14,8 +14,9 @@ public class fxApp extends Application {
     public void start(Stage stage) throws IOException {
 		/*
 		 * FXMLLoader fxmlLoader = new
-		 * FXMLLoader(fxApp.class.getResource("hello-view.fxml")); Scene scene = new
-		 * Scene(fxmlLoader.load(), 600, 600); stage.setScene(scene);
+		 * FXMLLoader(fxApp.class.getResource("hello-view.fxml")); 
+		 * Scene scene = new Scene(fxmlLoader.load(), 600, 600); 
+		 * stage.setScene(scene);
 		 * stage.setTitle("Ant Simulator!");
 		 * 
 		 * stage.show();
@@ -27,7 +28,9 @@ public class fxApp extends Application {
         primaryStage.setTitle("Ant Simulator");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-
+        
+        
+        
 
         // add music change bip.mp3 to music 
 //        String bip = "bip.mp3";

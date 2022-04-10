@@ -4,12 +4,24 @@ package com.example.demo;
 import java.util.ArrayList;
 
 
+
+	
+
     public class Ant{
+    	public static final int maxAnts = 12;
+    	
+    	// life span in nanoseconds
+    	public static final long lifeSpan = (long) 15000000000.0;
+    	
         private int x;
         private int y;
         private int typeOfAnt;
         private int age;
         String loc;
+        
+        // base
+        public static Position antHill = new Position(0,0);
+        
         private long startTime;
         private long reproduceTime;
         private long deathTime;
@@ -18,13 +30,14 @@ import java.util.ArrayList;
             this.y = y;
             startTime = System.nanoTime();
             reproduceTime = System.nanoTime();
-            deathTime = System.nanoTime();
+            // Death time = now + 15 seconds
+            deathTime = System.nanoTime() + lifeSpan;
 
 
         }
         public void changeLoc(int[][] gameGrid){
 
-            boolean check = false;
+            //boolean check = false;
             //while(!check){
                 int tempx = x;
                 int tempy = y;
@@ -38,11 +51,11 @@ import java.util.ArrayList;
                 }else {
                     tempy--;
                 }
-                if (tempx >= 0 && tempy >= 0 && tempx <= 20 && tempy <= 20) {
+                if (tempx >= 0 && tempy >= 0 && tempx < 20 && tempy < 30) {
                     if (gameGrid[tempx][tempy] == 0 && gameGrid[tempx][tempy] != 2) {
-                        check = true;
-                        gameGrid[tempx][tempy] = 1;
-//                        gameGrid[x][y] = 0;
+                        //check = true;
+                        gameGrid[tempx][tempy] = 8;
+                        gameGrid[x][y] = 0;
                         x = tempx;
                         y = tempy;
                     }
@@ -52,7 +65,73 @@ import java.util.ArrayList;
 //          System.out.println("x: " + x);
 
         }
-
+        
+        public void moveToEnemyBase(int[][] gameGrid) {
+        	// find nearest enemy
+        	Position nearestEnemyB = findNearestEnemyB(gameGrid);
+        	
+        	//move towards enemyB
+        	int tempx = x;
+            int tempy = y;
+            
+            //direction to enemyB
+            if(nearestEnemyB.x > tempx) {
+            	tempx++;
+            }
+            else if(nearestEnemyB.y > tempy) {
+            	tempy++;
+            }
+            else if(nearestEnemyB.x < tempx) {
+            	tempx--;
+            }
+            else if(nearestEnemyB.y < tempy) {
+            	tempy--;
+            }
+            
+        	if (tempx >= 0 && tempy >= 0 && tempx < Position.mapXsize && tempy < Position.mapYsize) {
+                if (gameGrid[tempx][tempy] == 0 ) {
+                    //check = true;
+                    gameGrid[tempx][tempy] = 8;
+                    gameGrid[x][y] = 0;
+                    x = tempx;
+                    y = tempy;
+                }else {
+                	
+                	changeLoc(gameGrid);
+                }
+            }
+        }
+        
+        /**
+         * 
+         * @param gameGrid
+         * @return Position vector of nearest enemy ant
+         * 
+         */
+        public Position findNearestEnemyB(int[][]gameGrid) {
+        	ArrayList<Position> enemyBases = new ArrayList<>();
+        	enemyBases.add(Country2.antHill);
+        	enemyBases.add(Country3.antHill);
+        	enemyBases.add(Country4.antHill);
+        	
+        	double minDistance = 30;
+        	Position base = enemyBases.get(0);
+        	
+        	//minimum distance
+        	for(int i =0; i < enemyBases.size(); i++) {
+        		// calculate distance 
+        		double distance = Math.sqrt(Math.pow(Math.abs(enemyBases.get(i).x - this.x), 2) + Math.pow(Math.abs(enemyBases.get(i).y - this.y), 2));
+        		
+        		if((double) distance < minDistance) {
+        			minDistance = distance;
+        			base = enemyBases.get(i);
+        		}
+        	}
+        	
+        	return base;
+        
+        }
+        
         //this code can also be inside of the controller class if necessary.
         public boolean checkNeighbor(ArrayList<Ant> tempAnt,int tempGrid[][]){
 

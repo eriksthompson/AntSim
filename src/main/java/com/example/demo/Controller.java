@@ -1,20 +1,70 @@
 package com.example.demo;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 
-
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.ResourceBundle;
 
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.chart.Axis;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ValueAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 
-public class Controller {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class Controller /*implements Initializable*/{
+//	
+//	final static String austria = "Austria";
+//    final static String brazil = "Brazil";
+//    final static String france = "France";
+//    final static String italy = "Italy";
+//    final static String usa = "USA";
+//
+//    @FXML
+//    private AnchorPane anchorPane;
+//
+//    
+//    @FXML
+//    private BarChart<String, Integer> barChart;
+//    
+//
+//    @Override
+//    public void initialize(URL url, ResourceBundle resourceBundle) {
+//        XYChart.Series<String, Integer> series1 = new XYChart.Series<>();
+//        XYChart.Series<String, Integer> series2 = new XYChart.Series<>();
+//
+//        series1.setName("Countries");
+//        series1.getData().add(new XYChart.Data<>("Austria", 50984));
+//        series1.getData().add(new XYChart.Data<>("Germany", 50984));
+//        series1.getData().add(new XYChart.Data<>("United Kingdom", 50984));
+//        series1.getData().add(new XYChart.Data<>("Greece", 50984));
+//        series1.getData().add(new XYChart.Data<>("France", 50984));
+//
+//        series2.setName("values");
+//        series2.getData().add(new XYChart.Data<>("Austria", 50984));
+//        series2.getData().add(new XYChart.Data<>("Germany", 50984));
+//        series2.getData().add(new XYChart.Data<>("United Kingdom", 50984));
+//        series2.getData().add(new XYChart.Data<>("Greece", 50984));
+//        series2.getData().add(new XYChart.Data<>("France", 50984));
+//
+//        barChart.getData().addAll(series1, series2);
+//
+//        System.out.println("Inside initialize");
+//    }
+//	
     Random randNum = new Random();
     //Position hold constants for map size
     int x = Position.mapXsize;
@@ -136,17 +186,22 @@ public class Controller {
     {
 
 //        if(gameGrid[7][8]==0){
-//        ants.add(new Ant(0,0));
-//        gameGrid[ants.get(ants.size()-1).getX()][ants.get(ants.size()-1).getY()]=1;
+        ants.add(new Ant(1,2));
+        
+        gameGrid[ants.get(ants.size()-1).getX()][ants.get(ants.size()-1).getY()]=8;
+        gameGrid[0][0] = 9;
 
         country2.add(new Country2(0,19));
         gameGrid[country2.get(country2.size()-1).getX()][country2.get(country2.size()-1).getY()]=3;
-
-        country3.add(new Country3(19,0));
+        gameGrid[0][18] = 9;
+        
+        country3.add(new Country3(18,1));
         gameGrid[country3.get(country3.size()-1).getX()][country3.get(country3.size()-1).getY()]=4;
-
+        gameGrid[18][0] = 9;
+        
         country4.add(new Country4(19,19));
         gameGrid[country4.get(country4.size()-1).getX()][country4.get(country4.size()-1).getY()]=5;
+        gameGrid[18][18] = 9;
 //            System.out.println("test");
 //        }
         updateScreen();
@@ -181,6 +236,12 @@ public class Controller {
                 else if (gameGrid[i][j]==7){
                     btn[i][j].setStyle("-fx-background-color:#0000ff");
                 }
+                else if (gameGrid[i][j]== 8) {
+                	btn[i][j].setStyle("-fx-background-color:#800080");
+                }
+                else if (gameGrid[i][j]== 9) {
+                	btn[i][j].setStyle("-fx-background-color:#000000");
+                }
             }
         }
     }
@@ -192,6 +253,7 @@ public class Controller {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
+            	
                 if(ants.size()>0) {
                     for (int i = 0; i < ants.size(); i++) {
                         if (now - ants.get(i).getStartTime() > 1000000000.0) {
@@ -204,13 +266,19 @@ public class Controller {
                             if (ants.get(i).checkNeighborWater(water, gameGrid)) {
                                 System.out.println("found neighbor water");
                             }
-                            ants.get(i).changeLoc(gameGrid);
+                            
+                            //random move (changeLoc) 
+                            //ants.get(i).changeLoc(gameGrid);
+                            
+                            //directed move
+                            ants.get(i).moveToEnemyBase(gameGrid);
+                            
                             ants.get(i).resetStartTime();
 
 
                         }
-                        if (now - ants.get(i).getReproduceTime() > 5000000000.0) {
-                            System.out.println("reproduce");
+                        if (now - ants.get(i).getReproduceTime() > 5000000000.0 && ants.size() < Ant.maxAnts) {
+                            
 
                             country1reproduce(i);
                         }
@@ -233,7 +301,7 @@ public class Controller {
 
 
                             }
-                            if (now - country2.get(i).getReproduceTime() > 5000000000.0 && country2.size() < 6) {
+                            if (now - country2.get(i).getReproduceTime() > 5000000000.0 && country2.size() < Ant.maxAnts) {
                                 
 
                                 country2reproduce(i);
@@ -257,7 +325,7 @@ public class Controller {
 
 
                         }
-                        if (now - country3.get(i).getReproduceTime() > 5000000000.0 && country3.size() < 6) {
+                        if (now - country3.get(i).getReproduceTime() > 5000000000.0 && country3.size() < Ant.maxAnts) {
                             
 
                             country3reproduce(i);
@@ -281,14 +349,16 @@ public class Controller {
 
 
                         }
-                        if (now - country4.get(i).getReproduceTime() > 5000000000.0 && country4.size() < 6) {
+                        if (now - country4.get(i).getReproduceTime() > 5000000000.0 && country4.size() < Ant.maxAnts) {
                             
 
                             country4reproduce(i);
                         }
                     }
                 }
-
+                if(ants.size() > 0 || country2.size() > 0 || country3.size() > 0|| country4.size() > 0) {
+            		death(now);
+            	}
 
 
 
@@ -300,7 +370,7 @@ public class Controller {
 //                    }
 
 
-
+                
                 updateScreen();
 
 //                System.out.println("test");
@@ -312,7 +382,7 @@ public class Controller {
     private ArrayList<Position> tempLocs3 = new ArrayList<>();
     private ArrayList<Position> tempLocs4 = new ArrayList<>();
     public void country1reproduce(int antNum){
-    	System.out.println("reproduce");
+    	System.out.println("Country 1 reproduce");
         tempLocs.clear();
         
         Ant current = ants.get(antNum);
@@ -325,7 +395,7 @@ public class Controller {
         if(newAntSpot != null) {
         	 // reproduce on newAntSpot  //tempLocs3Array not needed?
         	ants.add(new Ant(newAntSpot.getX(), newAntSpot.getY()));
-            gameGrid[newAntSpot.getX()][newAntSpot.getY()]=1;
+            gameGrid[newAntSpot.getX()][newAntSpot.getY()]=8;
         }
         
 		/*
@@ -465,36 +535,47 @@ public class Controller {
 	 * }
 	 */
 
-    public void death(){
-        int c1 = random(1, 4);
-        int c2 = random(1, 4);
-        int c3 = random(1, 4);
-        int c4 = random(1, 4);
+    public void death(long now){
+//        int c1 = random(1, 4);
+//        int c2 = random(1, 4);
+//        int c3 = random(1, 4);
+//        int c4 = random(1, 4);
         for (int i = 0; i < ants.size(); i++){
-            if(ants.get(i).getDeathTime() == 10000000000.0){
-                ants.remove(i);
+            if(ants.get(i).getDeathTime() < now){
+            	gameGrid[ants.get(i).getX()][ants.get(i).getY()] = 0;
+                
+                
                 ants.get(i).resetDeathTime();
+                ants.remove(i);
             }
         }
         for (int i = 0; i < country2.size(); i++){
-            if(country2.get(i).getDeathTime() == 10000000000.0){
-                country2.remove(i);
+            if(country2.get(i).getDeathTime() < now){
+            	 gameGrid[country2.get(i).getX()][country2.get(i).getY()] = 0;
+                
+               
                 country2.get(i).resetDeathTime();
+                country2.remove(i);
             }
         }
         for (int i = 0; i < country3.size(); i++){
-            if(country3.get(i).getDeathTime() == 10000000000.0){
-                country3.remove(i);
+            if(country3.get(i).getDeathTime() < now){
+
+                gameGrid[country3.get(i).getX()][country3.get(i).getY()] = 0;
+                
                 country3.get(i).resetDeathTime();
+                country3.remove(i);
             }
         }
         for (int i = 0; i < country4.size(); i++){
-            if(country4.get(i).getDeathTime() == 10000000000.0){
-                country4.remove(i);
+            if(country4.get(i).getDeathTime() < now){
+
+                gameGrid[country4.get(i).getX()][country4.get(i).getY()] = 0;
+                
                 country4.get(i).resetDeathTime();
+                country4.remove(i);
             }
         }
-
     }
 
     protected int random (int lower, int upper){
@@ -521,4 +602,5 @@ public class Controller {
     public void startWar(){
 
     }
+	
 }
